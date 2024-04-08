@@ -6,6 +6,7 @@ class EventType(Enum):
     SET_FIELD = auto()
     SET_FLAG = auto()
 
+
 @dataclass
 class Event:
     event_type: EventType
