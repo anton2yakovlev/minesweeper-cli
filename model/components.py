@@ -1,5 +1,8 @@
+from enum import Enum, auto
 from pydantic import BaseModel, Field, validator, ValidationError
 from pydantic.types import conint
+
+from common.enums import CellDisplayStatus
 
 
 class Settings(BaseModel):
@@ -17,7 +20,20 @@ class Settings(BaseModel):
 
 
 class Cell:
-    pass
+    def __init__(self) -> None:
+        self.hide = True  # ячейка является скрытой до тех пор, пока ее не откроют
+        self.mined = False  # есть ли мина на этой ячейке
+        self.flaged = False  # стоит ли флаг на этой ячейке
+        self.value = 0  # значение ячейки. количество соседей с минами
+
+    def get_cell_display_value(self):
+        if self.hide:
+            return CellDisplayStatus.HIDDEN
+        if self.flaged:
+            return CellDisplayStatus.FLAGGED
+        if self.mined:
+            return CellDisplayStatus.DETONATED_MINE
+        return CellDisplayStatus.OPENED_VALUE
 
 
 class Board:
@@ -46,7 +62,7 @@ class GameService:
     }
 
     @classmethod
-    def make_settings_zip(cls, settings: tuple) -> dict:
+    def make_settings_dict(cls, settings: tuple) -> dict:
         settings_zip = zip(("x", "y", "mines"), settings)
         return dict(settings_zip)
 
@@ -57,7 +73,7 @@ class GameService:
             settings = cls.difficult_settings[difficulty]
         else:
             settings = args.get("settings")
-        return Settings(**cls.make_settings_zip(settings))
+        return Settings(**cls.make_settings_dict(settings))
 
     @classmethod
     def init_game(cls, **args) -> Game:
