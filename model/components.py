@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import List
 from pydantic import BaseModel, Field, validator, ValidationError
 from pydantic.types import conint
 
@@ -26,6 +27,15 @@ class Cell:
         self.flaged = False  # стоит ли флаг на этой ячейке
         self.value = 0  # значение ячейки. количество соседей с минами
 
+    def set_mine(self) -> None:
+        self.mined = True
+
+    def set_flag(self) -> None:
+        self.flaged = not self.flaged
+
+    def open_cell(self) -> bool:
+        self.hide = False
+
     def get_cell_display_value(self):
         if self.hide:
             return CellDisplayStatus.HIDDEN
@@ -39,7 +49,16 @@ class Cell:
 class Board:
     def __init__(self, x, y) -> None:
         self.board = [[Cell() for _ in range(x)] for __ in range(y)]
-        print(self.board)
+    
+    def get_board_display(self):
+        displayed_board = []
+        for row in self.board:
+            new_row = []
+            for cell in row:
+                new_row.append(cell.get_cell_display_value())
+            displayed_board.append(new_row)
+        return displayed_board
+
 
 
 class Game:
