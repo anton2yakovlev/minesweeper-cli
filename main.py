@@ -1,5 +1,6 @@
 import click
 
+from custom_types import SettingsType
 from view.CursesView import CursesView
 from model.Model import Model
 from controller.CursesMouseController import CursesMouseController
@@ -14,9 +15,8 @@ from controller.CursesMouseController import CursesMouseController
     help="",
 )
 @click.option("--settings", "-s", nargs=3, type=(int, int, int), help="")
-def start_app(difficulty, settings):
-    print(difficulty, settings)
-    model = Model()
+def start_app(**args):
+    model = Model(**args)
     view = CursesView()
     controller = CursesMouseController(model, view)
     controller.main_loop()
